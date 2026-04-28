@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Tenacitas · Private Beta (mockup)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:"JetBrains Mono","SF Mono",Menlo,monospace}
+body{background:#000;color:#0f0;min-height:100vh;overflow-x:hidden}
+.bg{position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,#001a00 0%,#000 60%);z-index:-1}
+.scan{position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(0,255,0,.03) 3px,rgba(0,255,0,.03) 4px);z-index:1}
+main{max-width:880px;margin:0 auto;padding:3rem 1.5rem;position:relative;z-index:2}
+.head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #0f0;padding-bottom:1rem;margin-bottom:2rem;font-size:.78rem}
+.head b{font-size:.95rem;letter-spacing:.2em}
+.head .st{display:flex;gap:1rem;color:#0a0}
+.head .st b{color:#0f0}
+.box{border:1px solid #0a0;padding:1.2rem;margin-bottom:1.5rem;background:rgba(0,20,0,.3);position:relative}
+.box::before{content:attr(data-l);position:absolute;top:-.6rem;left:1rem;background:#000;padding:0 .5rem;color:#0f0;font-size:.75rem;letter-spacing:.15em}
+h1{font-size:2rem;letter-spacing:.1em;margin-bottom:.5rem;text-shadow:0 0 8px #0f0}
+h1::before{content:"> ";color:#0a0}
+.sub{color:#0a0;margin-bottom:1.5rem;font-size:.92rem}
+.line{display:flex;gap:.5rem;font-size:.85rem;margin-bottom:.3rem}
+.line b{color:#fa0;min-width:140px}
+.line span{color:#0f0}
+.terminal{background:#001000;padding:1rem;font-size:.82rem;line-height:1.5;border:1px solid #0a0;margin-bottom:1.5rem}
+.terminal .pr{color:#0a0}
+.terminal .ok{color:#0f0}
+.terminal .warn{color:#fa0}
+.terminal .err{color:#f44}
+.locked{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1.5rem}
+.locked div{border:1px dashed #0a0;padding:.8rem;font-size:.82rem;color:#0a0;text-align:center}
+.locked div b{color:#0f0;display:block;margin-bottom:.3rem}
+.locked div.ok{border-style:solid;border-color:#0f0}
+form{display:flex;gap:.5rem;margin-top:1rem}
+input{flex:1;background:#000;border:1px solid #0a0;color:#0f0;padding:.6rem;font-family:inherit;font-size:.9rem;outline:0}
+input:focus{border-color:#0f0;box-shadow:0 0 8px #0f0}
+button{background:#0f0;color:#000;border:0;padding:.6rem 1.2rem;font-family:inherit;font-weight:bold;cursor:pointer;letter-spacing:.1em}
+button:hover{background:#0a0}
+.cursor{display:inline-block;width:8px;height:14px;background:#0f0;animation:bl 1s infinite}
+@keyframes bl{50%{opacity:0}}
+.foot{margin-top:2rem;padding-top:1rem;border-top:1px solid #0a0;font-size:.75rem;color:#0a0;text-align:center}
+.foot a{color:#0f0;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="bg"></div><div class="scan"></div>
+<main>
+  <div class="head">
+    <b>TENACITAS://core.v0.9.4</b>
+    <div class="st">
+      <span><b>STATUS</b> private</span>
+      <span><b>BUILD</b> stable</span>
+      <span><b>UPTIME</b> 47d</span>
+    </div>
+  </div>
+  <h1>SECURE_PROJECT_GATE<span class="cursor"></span></h1>
+  <p class="sub">Acceso restringido. Este sistema está protegido por capa CI/CD, secret-detection y revisión manual de PRs. No hay enlace público.</p>
+
+  <div class="box" data-l="// ABOUT">
+    <p style="line-height:1.7">Tenacitas es un proyecto privado en desarrollo. Lo que se ve aquí es la <b>página pública mínima</b> — el resto del código vive detrás de autenticación.</p>
+    <p style="line-height:1.7;margin-top:.5rem;color:#0a0">Pipeline endurecido con <b>pre-commit hooks</b> (detect-secrets, ruff, mypy), Docker, GitHub Actions y firma GPG en commits.</p>
+  </div>
+
+  <div class="box" data-l="// STACK">
+    <div class="line"><b>Lenguaje</b><span>TypeScript 5.4 + Python 3.12</span></div>
+    <div class="line"><b>Runtime</b><span>Node 22 LTS · Bun (alt)</span></div>
+    <div class="line"><b>CI/CD</b><span>GitHub Actions · 4 workflows</span></div>
+    <div class="line"><b>Containerización</b><span>Docker multi-stage + Compose</span></div>
+    <div class="line"><b>Secrets</b><span>detect-secrets + Vault</span></div>
+    <div class="line"><b>Deploy</b><span>VPS + systemd + Nginx</span></div>
+    <div class="line"><b>Observabilidad</b><span>structured JSON logs · Loki</span></div>
+  </div>
+
+  <div class="box" data-l="// CI_LAST_RUN">
+    <div class="terminal">
+<span class="pr">$ </span>gh run list --workflow=ci.yml --limit 1
+<span class="ok">completed  success  main  CI · build+test+secret-scan  3m12s</span>
+
+<span class="pr">$ </span>cat .github/workflows/ci.yml | head -8
+<span class="ok">name: CI</span>
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pre-commit run --all-files
+
+<span class="pr">$ </span>pre-commit run --all-files
+<span class="ok">detect-secrets..........................Passed</span>
+<span class="ok">ruff....................................Passed</span>
+<span class="ok">mypy....................................Passed</span>
+<span class="warn">prettier................................Skipped (no changes)</span>
+<span class="pr">$ </span><span class="cursor"></span>
+    </div>
+  </div>
+
+  <div class="box" data-l="// MODULES">
+    <div class="locked">
+      <div class="ok"><b>core/auth</b>v1.2 · 100% covered</div>
+      <div class="ok"><b>core/db</b>v0.9 · migrations OK</div>
+      <div><b>🔒 modules/billing</b>access denied</div>
+      <div><b>🔒 modules/admin</b>access denied</div>
+      <div><b>🔒 ai/orchestrator</b>access denied</div>
+      <div><b>🔒 ai/memory</b>access denied</div>
+    </div>
+  </div>
+
+  <div class="box" data-l="// REQUEST_ACCESS">
+    <p style="margin-bottom:.5rem">Si formas parte del círculo de testers privados, introduce tu token de invitación:</p>
+    <form id="f" onsubmit="event.preventDefault();out.innerHTML+='\n<span class=err>auth: invalid token · request denied</span>';o.value=''">
+      <input id="o" placeholder="invite_xxxxxxxxxxxxxxxxxx" autocomplete="off">
+      <button>Authenticate</button>
+    </form>
+    <pre id="out" style="margin-top:.7rem;font-size:.78rem;color:#fa0">auth: waiting for token...</pre>
+  </div>
+
+  <div class="foot">
+    <p>tenacitas.dev · private · <a href="#">contact</a> · <a href="#">RGPD</a> · <a href="#">PGP key</a></p>
+    <p style="margin-top:.3rem">© 2026 · all rights reserved · do not share</p>
+  </div>
+</main>
+</body></html>
